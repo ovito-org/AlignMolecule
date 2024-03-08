@@ -18,19 +18,26 @@ class MoleculeAlign(ModifierInterface):
         data_cache: DataCollection,
         **kwargs,
     ):
-        assert "Selection" in data.particles
+        # Get selections
+        if "Selection" in data.particles:
+            selection = data.particles["Selection"] == 1
+        else:
+            selection = np.ones(data.particles.count, dtype=bool)
+
+        data_ref = input_slots["upstream"].compute(0)
+        if "Selection" in data_ref.particles:
+            selection_ref = data_ref.particles["Selection"] == 1
+        else:
+            selection_ref = np.ones(data_ref.particles.count, dtype=bool)
 
         # get reference points
-        data_ref = input_slots["upstream"].compute(0)
-        pos_ref = data_ref.particles["Position"][data_ref.particles["Selection"] == 1]
-        idx_ref = data_ref.particles["Particle Identifier"][
-            data_ref.particles["Selection"] == 1
-        ]
+        pos_ref = data_ref.particles["Position"][selection_ref]
+        idx_ref = data_ref.particles["Particle Identifier"][selection_ref]
         pos_ref = pos_ref[np.argsort(idx_ref)]
 
         # get current points
-        pos = data.particles["Position"][data.particles["Selection"] == 1]
-        idx = data.particles["Particle Identifier"][data.particles["Selection"] == 1]
+        pos = data.particles["Position"][selection]
+        idx = data.particles["Particle Identifier"][selection]
         pos = pos[np.argsort(idx)]
 
         # remove translation
@@ -59,7 +66,7 @@ class MoleculeAlign(ModifierInterface):
         data.apply(AffineTransformationModifier(transformation=transform))
 
         # Translate points to reference position
-        pos = data.particles["Position"][data.particles["Selection"] == 1]
+        pos = data.particles["Position"][selection]
         translate = pos_ref_bar - np.mean(pos, axis=0)
 
         transform = np.zeros((3, 4))
@@ -68,14 +75,14 @@ class MoleculeAlign(ModifierInterface):
         data.apply(AffineTransformationModifier(transformation=transform))
 
         # RMSD selection
-        pos_ref = data_ref.particles["Position"][data_ref.particles["Selection"] == 1]
+        pos_ref = data_ref.particles["Position"][selection_ref]
         pos_ref = pos_ref[np.argsort(idx_ref)]
 
-        pos = data.particles["Position"][data.particles["Selection"] == 1]
+        pos = data.particles["Position"][selection]
         pos = pos[np.argsort(idx)]
 
         rmsd = np.mean(np.square(pos_ref - pos))
-        data.attributes["PointAlignment.RMSD"] = rmsd
+        data.attributes["MoleculeAlign.RMSD"] = rmsd
 
         # RMSD all
         pos = data.particles["Position"][
@@ -86,43 +93,43 @@ class MoleculeAlign(ModifierInterface):
         ]
 
         rmsd_all = np.mean(np.square(pos_ref - pos))
-        data.attributes["PointAlignment.RMSD_all"] = rmsd_all
+        data.attributes["MoleculeAlign.RMSD_all"] = rmsd_all
 
         # Save RMSD
-        if "PointAlignment.RMSD.array" not in data_cache.attributes:
-            data_cache.attributes["PointAlignment.RMSD.array"] = np.empty(
+        if "MoleculeAlign.RMSD.array" not in data_cache.attributes:
+            data_cache.attributes["MoleculeAlign.RMSD.array"] = np.empty(
                 input_slots["upstream"].num_frames
             )
-            data_cache.attributes["PointAlignment.RMSD.array"][:] = np.nan
+            data_cache.attributes["MoleculeAlign.RMSD.array"][:] = np.nan
 
-            data_cache.attributes["PointAlignment.RMSD_prev.array"] = np.empty(
+            data_cache.attributes["MoleculeAlign.RMSD_prev.array"] = np.empty(
                 input_slots["upstream"].num_frames
             )
-            data_cache.attributes["PointAlignment.RMSD_prev.array"][:] = np.nan
+            data_cache.attributes["MoleculeAlign.RMSD_prev.array"][:] = np.nan
 
-            data_cache.attributes["PointAlignment.RMSD_all.array"] = np.empty(
+            data_cache.attributes["MoleculeAlign.RMSD_all.array"] = np.empty(
                 input_slots["upstream"].num_frames
             )
-            data_cache.attributes["PointAlignment.RMSD_all.array"][:] = np.nan
+            data_cache.attributes["MoleculeAlign.RMSD_all.array"][:] = np.nan
 
-        rmsd_array = data_cache.attributes["PointAlignment.RMSD.array"]
+        rmsd_array = data_cache.attributes["MoleculeAlign.RMSD.array"]
         rmsd_array[frame] = rmsd
         table = data.tables.create(
-            identifier="PointAlignment.RMSD",
-            plot_mode=DataTable.PlotMode.Line,
-            title="PointAlignment RMSD",
+            identifier="MoleculeAlign.RMSD",
+            plot_mode=DataTable.PlotMode.Scatter,
+            title="MoleculeAlign RMSD",
         )
         table.x = table.create_property(
             "Frame", data=np.arange(input_slots["upstream"].num_frames)
         )
         table.y = table.create_property("RMSD", data=rmsd_array)
 
-        rmsd_array_all = data_cache.attributes["PointAlignment.RMSD_all.array"]
+        rmsd_array_all = data_cache.attributes["MoleculeAlign.RMSD_all.array"]
         rmsd_array_all[frame] = rmsd_all
         table = data.tables.create(
-            identifier="PointAlignment.RMSD_all",
-            plot_mode=DataTable.PlotMode.Line,
-            title="PointAlignment RMSD All",
+            identifier="MoleculeAlign.RMSD_all",
+            plot_mode=DataTable.PlotMode.Scatter,
+            title="MoleculeAlign RMSD All",
         )
         table.x = table.create_property(
             "Frame", data=np.arange(input_slots["upstream"].num_frames)
