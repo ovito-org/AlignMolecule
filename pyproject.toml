@@ -3,8 +3,8 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "MoleculeAlign"
-version = "2024.1"
+name = "AlignMolecule"
+version = "2024.2"
 description = "Align molecules using the Kabsch algorithm."
 keywords = ["ovito", "ovito-extension"]
 authors = [{name = "Daniel Utt", email = "utt@ovito.org"}]
@@ -17,10 +17,10 @@ dependencies = [
 ]
 
 [project.urls]
-repository = "https://github.com/ovito-org/MoleculeAlign"
+repository = "https://github.com/ovito-org/AlignMolecule"
 
 [project.entry-points.'OVITO.Modifier']
-"Molecule Align" = "MoleculeAlign:MoleculeAlign"
+"Align Molecule" = "AlignMolecule:AlignMolecule"
 
 [tool.setuptools.packages.find]
 where = ["src"]
