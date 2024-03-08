@@ -3,36 +3,32 @@ Align molecules using the [Kabsch algorithm](https://en.wikipedia.org/wiki/Kabsc
 
 ## Description
 
-Aligns atoms across snapshots in a trajectory based on the [Kabsch algorithm](https://en.wikipedia.org/wiki/Kabsch_algorithm). This means that only rotation but no stretch or shear will be performed.
+This tool aligns atoms across different snapshots in a trajectory using the [Kabsch algorithm](https://en.wikipedia.org/wiki/Kabsch_algorithm), allowing only rotational adjustments without any stretching or shearing.
 
-The algorithm can take either all atoms or a selection as atoms that are used as reference for alignment.
-
-You may provide a reference frame. This defaults to the 0th frame. This frame is used as reference orientation for the atoms and their [centroid](https://en.wikipedia.org/wiki/Centroid) is shifted to the origin. 
+Users can select either all atoms or a subset as the reference for alignment. Optionally, a reference frame can be specified, defaulting to the first frame of the trajectory. This frame serves as the baseline orientation for the atoms, with their [centroid](https://en.wikipedia.org/wiki/Centroid) repositioned to the origin.
 
 ### Requirements
 
-The modifier depends on unique particle identifiers for the atoms. If non exist, they will be generated at runtime. In that case, the modifier relies on a constant order of atoms in the trajectory.
+This modifier requires unique identifiers for each atom. If these are not available, they will be generated during runtime. In that case the modifier assumes a consistent atom order throughout the trajectory.
 
-The behavior of this modifier relys on having an unwrapped trajectory. Please ensure that you provide unwrapped atomic coordinates or use the [unwrap trajectories modifier](https://www.ovito.org/docs/current/reference/pipelines/modifiers/unwrap_trajectories.html) prior to applying the molecule align modifier. For wrapped trajectories the behavior is undefined.
+It's crucial to provide an unwrapped trajectory to ensure accurate behavior. If your trajectory is wrapped, use the [unwrap trajectories modifier](https://www.ovito.org/docs/current/reference/pipelines/modifiers/unwrap_trajectories.html) before applying this modifier. The behavior with wrapped trajectories is unpredictable.
 
-If the modifier onyl operates on a selection of atoms, that selection has to be consistent across the whole trajectory. The [freeze property](https://www.ovito.org/docs/current/reference/pipelines/modifiers/freeze_property.html#particles-modifiers-freeze-property) modifier can be used to keep the selection constant. Otherwise the behavior is undefined. 
+When operating on a subset of atoms, ensure the selection remains consistent throughout the trajectory. Utilize the [freeze property](https://www.ovito.org/docs/current/reference/pipelines/modifiers/freeze_property.html#particles-modifiers-freeze-property) modifier to maintain a consistent selection, or the modifier's output may be undefined.
 
 ### Output
 
-The modifier outputs the root mean square deviation (RMSD) of the atomic coordinates after alignment to the reference frame. The RMSD for the selected atoms is stored in the `MoleculeAlign.RMSD` [global attribute](https://www.ovito.org/docs/current/reference/data_inspector/attributes.html). Additionally, the `MoleculeAlign.RMSD_all` value contained the RMSD for all atoms in the simulation.
+The modifier calculates the root mean square deviation (RMSD) of atomic coordinates post-alignment relative to the reference frame. The RMSD for selected atoms is recorded in the `MoleculeAlign.RMSD` [global attribute](https://www.ovito.org/docs/current/reference/data_inspector/attributes.html). The RMSD for all atoms is available in the `MoleculeAlign.RMSD_all` attribute.
 
-It also outputs an RMSD particle property which contains the RMSD for each atom. 
-
-Lastly, a data table with the RMSD values across the frames is generated and populated as the trajectory is viewed in OVITO. 
+Additionally, it provides an RMSD value for each atom and generates a data table showing RMSD values across frames, which populates as the trajectory is analyzed in OVITO Pro.
 
 ## Parameters 
 
-- `only_selected` / "Use only selected particles": Use only selected particles as reference for alignment. `Default = True`
-- `reference_frame` / "Reference frame": Frame number to be used as reference for alignment. `Default = 0`
+- `only_selected` / "Use only selected particles": This option allows alignment using only selected particles as the reference. `Default = True`
+- `reference_frame` / "Reference frame": Specifies the frame to use as the reference for alignment. `Default = 0`
 
 ## Example
 
-Example showing the alignment of the green set of atoms over the whole trajectory.
+Here's an example illustrating how the modifier aligns the highlighted (green) atoms throughout the trajectory.
 
 ![Example image showing the molecule alignment](examples/Example_01.png)
 
