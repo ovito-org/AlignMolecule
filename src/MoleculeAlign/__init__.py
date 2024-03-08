@@ -105,10 +105,10 @@ class MoleculeAlign(ModifierInterface):
         pos = data.particles["Position"][selection]
         pos = pos[np.argsort(idx)]
 
-        suffix = self.get_suffix(data)
+        prop_name = f"MoleculeAlignMoleculeAlign{self.get_suffix(data)}"
 
         rmsd = np.mean(np.square(pos_ref - pos))
-        data.attributes[f"MoleculeAlign{suffix}.RMSD"] = rmsd
+        data.attributes[f"{prop_name}.RMSD"] = rmsd
 
         # RMSD all
         pos = data.particles["Position"][
@@ -120,43 +120,30 @@ class MoleculeAlign(ModifierInterface):
 
         rmsd_all = np.mean(np.square(pos_ref - pos), axis=1)
         data.particles_.create_property("RMSD", data=rmsd_all)
-
-        data.attributes[f"MoleculeAlignMoleculeAlign{suffix}.RMSD_all"] = np.mean(
-            rmsd_all
-        )
+        rmsd_all = np.mean(rmsd_all)
+        data.attributes[f"{prop_name}.RMSD_all"] = rmsd_all
 
         # Save RMSD
-        if (
-            f"MoleculeAlignMoleculeAlign{suffix}.RMSD.array"
-            not in data_cache.attributes
-        ):
-            data_cache.attributes[f"MoleculeAlignMoleculeAlign{suffix}.RMSD.array"] = (
-                np.empty(input_slots["upstream"].num_frames)
+        if f"{prop_name}.RMSD.array" not in data_cache.attributes:
+            data_cache.attributes[f"{prop_name}.RMSD.array"] = np.empty(
+                input_slots["upstream"].num_frames
             )
-            data_cache.attributes[f"MoleculeAlignMoleculeAlign{suffix}.RMSD.array"][
-                :
-            ] = np.nan
+            data_cache.attributes[f"{prop_name}.RMSD.array"][:] = np.nan
 
-            data_cache.attributes[
-                f"MoleculeAlignMoleculeAlign{suffix}.RMSD_prev.array"
-            ] = np.empty(input_slots["upstream"].num_frames)
-            data_cache.attributes[
-                f"MoleculeAlignMoleculeAlign{suffix}.RMSD_prev.array"
-            ][:] = np.nan
+            data_cache.attributes[f"{prop_name}.RMSD_prev.array"] = np.empty(
+                input_slots["upstream"].num_frames
+            )
+            data_cache.attributes[f"{prop_name}.RMSD_prev.array"][:] = np.nan
 
-            data_cache.attributes[
-                f"MoleculeAlignMoleculeAlign{suffix}.RMSD_all.array"
-            ] = np.empty(input_slots["upstream"].num_frames)
-            data_cache.attributes[f"MoleculeAlignMoleculeAlign{suffix}.RMSD_all.array"][
-                :
-            ] = np.nan
+            data_cache.attributes[f"{prop_name}.RMSD_all.array"] = np.empty(
+                input_slots["upstream"].num_frames
+            )
+            data_cache.attributes[f"{prop_name}.RMSD_all.array"][:] = np.nan
 
-        rmsd_array = data_cache.attributes[
-            f"MoleculeAlignMoleculeAlign{suffix}.RMSD.array"
-        ]
+        rmsd_array = data_cache.attributes[f"{prop_name}.RMSD.array"]
         rmsd_array[frame] = rmsd
         table = data.tables.create(
-            identifier=f"MoleculeAlign{suffix}.RMSD",
+            identifier=f"{prop_name}.RMSD",
             plot_mode=DataTable.PlotMode.Scatter,
             title="MoleculeAlign RMSD",
         )
@@ -165,10 +152,10 @@ class MoleculeAlign(ModifierInterface):
         )
         table.y = table.create_property("RMSD", data=rmsd_array)
 
-        rmsd_array_all = data_cache.attributes[f"MoleculeAlign{suffix}.RMSD_all.array"]
+        rmsd_array_all = data_cache.attributes[f"{prop_name}.RMSD_all.array"]
         rmsd_array_all[frame] = rmsd_all
         table = data.tables.create(
-            identifier=f"MoleculeAlign{suffix}.RMSD_all",
+            identifier=f"{prop_name}.RMSD_all",
             plot_mode=DataTable.PlotMode.Scatter,
             title="MoleculeAlign RMSD All",
         )
