@@ -39,6 +39,17 @@ class MoleculeAlign(ModifierInterface):
         data_cache: DataCollection,
         **kwargs,
     ):
+        # Add identifier if not present
+        if "Particle Identifier" not in data.particles:
+            data.particles_.create_property(
+                "Particle Identifier", data=np.arange(data.particles.count)
+            )
+        data_ref = input_slots["upstream"].compute(self.reference_frame)
+        if "Particle Identifier" not in data_ref.particles:
+            data_ref.particles_.create_property(
+                "Particle Identifier", data=np.arange(data_ref.particles.count)
+            )
+
         # Get selections
         if self.only_selected and "Selection" not in data.particles:
             raise ValueError("No selection available. Please define a selection.")
@@ -48,7 +59,6 @@ class MoleculeAlign(ModifierInterface):
         else:
             selection = np.ones(data.particles.count, dtype=bool)
 
-        data_ref = input_slots["upstream"].compute(self.reference_frame)
         if self.only_selected:
             selection_ref = data_ref.particles["Selection"] == 1
         else:
