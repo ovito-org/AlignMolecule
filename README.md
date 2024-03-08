@@ -1,34 +1,55 @@
-# Python Modifier Template
+# Molecule Align
+Align molecules using the [Kabsch algorithm](https://en.wikipedia.org/wiki/Kabsch_algorithm).
 
-Template for a custom Python-based modifier that hooks into OVITO and can easily be shared with other users.
+## Description
 
-This repository contains a template for creating your own [Python script modifier](https://docs.ovito.org/python/introduction/custom_modifiers.html), 
-which can be installed into *OVITO Pro* or the [`ovito`](https://pypi.org/project/ovito/) Python module using *pip*.
+Aligns atoms across snapshots in a trajectory based on the [Kabsch algorithm](https://en.wikipedia.org/wiki/Kabsch_algorithm). This means that only rotation but no stretch or shear will be performed.
 
-## Getting Started
+The algorithm can take either all atoms or a selection as atoms that are used as reference for alignment.
 
-1. Click the "Use this template" button to create your own repository based on this template.
-2. Rename `src/PackageName` to reflect the name of your modifier.
-3. Implement your [modifier](https://docs.ovito.org/python/introduction/custom_modifiers.html#advanced-interface) in [`src/PackageName/__init__.py`](src/PackageName/__init__.py). If your modifier needs access to more than one frame of a trajectory, you can uncomment and implement the `input_caching_hints` method. Otherwise, you can delete it. More details on this method can be found in the [OVITO Python docs](https://www.ovito.org/docs/current/python/introduction/custom_modifiers.html#writing-custom-modifiers-advanced-interface). 
-4. Fill in the [`pyproject.toml`](pyproject.toml) file. Fields that need to be replaced with your information are enclosed in descriptive `[[field]]` tags. Please make sure to include ovito>=3.9.1 as a dependency. Depending on your needs, you can add additional fields to the `pyproject.toml` file. Information can be found [here](https://setuptools.pypa.io/en/latest/userguide/index.html).
-5. Fill in the [`README_Template.md`](README_Template.md) file. Again, the `[[fields]]` placeholders should guide you. Feel free to add other sections like "Images", "Citation", or "References" as needed.
-6. Add meaningful examples and data sample files to the `examples` directory to help others understand the use of your modifier.
-7. Pick a license for your project and replace the current (MIT) [`LICENSE`](LICENSE) file with your license. If you keep the MIT license, please update the name and year in the current file.
-8. Once you're done, rename `README_Template.md` to `README.md`, replacing this file.
+You may provide a reference frame. This defaults to the 0th frame. This frame is used as reference orientation for the atoms and their [centroid](https://en.wikipedia.org/wiki/Centroid) is shifted to the origin. 
 
-## Testing
-This repository is configured to enable automated testing using the [pytest](https://docs.pytest.org/en/7.4.x/) framework. Tests are automatically executed after each push to the main branch. To set up and activate automated testing, follow these two steps:
+### Requirements
 
-1. Write your tests in the `test/test_modifier.py` file. You can also use other filenames that adhere to the pytest requirements.
-2. Open the `.github/workflows/python-tests.yml` file and remove the `if: ${{ false }}` condition on line 15.
+The modifier depends on unique particle identifiers for the atoms. If non exist, they will be generated at runtime. In that case, the modifier relies on a constant order of atoms in the trajectory.
 
-If needed, you can also adjust the operating system and Python versions by modifying the following lines:
-```yaml
-os: [ubuntu-latest, macos-latest, windows-latest]
-python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
-```
+The behavior of this modifier relys on having an unwrapped trajectory. Please ensure that you provide unwrapped atomic coordinates or use the [unwrap trajectories modifier](https://www.ovito.org/docs/current/reference/pipelines/modifiers/unwrap_trajectories.html) prior to applying the molecule align modifier. For wrapped trajectories the behavior is undefined.
 
-An example can be found [here](https://github.com/ovito-org/GenerateRandomSolution).
+If the modifier onyl operates on a selection of atoms, that selection has to be consistent across the whole trajectory. The [freeze property](https://www.ovito.org/docs/current/reference/pipelines/modifiers/freeze_property.html#particles-modifiers-freeze-property) modifier can be used to keep the selection constant. Otherwise the behavior is undefined. 
 
-As of August 16, 2023, according to the [GitHub documentation](https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions), *"GitHub Actions usage is free for standard GitHub-hosted runners in public repositories, and for self-hosted runners."* Please refer to the GitHub documentation if you are uncertain about incurring costs.
+### Output
 
+The modifier outputs the root mean square deviation (RMSD) of the atomic coordinates after alignment to the reference frame. The RMSD for the selected atoms is stored in the `MoleculeAlign.RMSD` [global attribute](https://www.ovito.org/docs/current/reference/data_inspector/attributes.html). Additionally, the `MoleculeAlign.RMSD_all` value contained the RMSD for all atoms in the simulation.
+
+It also outputs an RMSD particle property which contains the RMSD for each atom. 
+
+Lastly, a data table with the RMSD values across the frames is generated and populated as the trajectory is viewed in OVITO. 
+
+## Parameters 
+
+- `only_selected` / "Use only selected particles": Use only selected particles as reference for alignment. `Default = True`
+- `reference_frame` / "Reference frame": Frame number to be used as reference for alignment. `Default = 0`
+
+## Example
+
+Example showing the alignment of the green set of atoms over the whole trajectory.
+
+![Example image showing the molecule alignment](examples/Example_01.png)
+
+## Installation
+- OVITO Pro [integrated Python interpreter](https://docs.ovito.org/python/introduction/installation.html#ovito-pro-integrated-interpreter):
+  ```
+  ovitos -m pip install --user git+https://github.com/ovito-org/MoleculeAlign.git
+  ``` 
+  The `--user` option is recommended and [installs the package in the user's site directory](https://pip.pypa.io/en/stable/user_guide/#user-installs).
+
+- Other Python interpreters or Conda environments:
+  ```
+  pip install git+https://github.com/ovito-org/MoleculeAlign.git
+  ```
+
+## Technical information / dependencies
+- Tested on OVITO version 3.10.3
+
+## Contact
+Daniel Utt (utt@ovito.org)
