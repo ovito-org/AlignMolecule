@@ -57,12 +57,12 @@ class MoleculeAlign(ModifierInterface):
         if self.only_selected:
             selection = data.particles["Selection"] == 1
         else:
-            selection = np.ones(data.particles.count, dtype=bool)
+            selection = ...
 
         if self.only_selected:
             selection_ref = data_ref.particles["Selection"] == 1
         else:
-            selection_ref = np.ones(data_ref.particles.count, dtype=bool)
+            selection_ref = ...
 
         # get reference points
         pos_ref = data_ref.particles["Position"][selection_ref]
@@ -115,18 +115,15 @@ class MoleculeAlign(ModifierInterface):
         pos = data.particles["Position"][selection]
         pos = pos[np.argsort(idx)]
 
-        prop_name = f"MoleculeAlignMoleculeAlign{self.get_suffix(data)}"
+        prop_name = f"MoleculeAlign{self.get_suffix(data)}"
 
         rmsd = np.mean(np.square(pos_ref - pos))
         data.attributes[f"{prop_name}.RMSD"] = rmsd
 
         # RMSD all
-        pos = data.particles["Position"][
-            np.argsort(data.particles["Particle Identifier"])
-        ]
-        pos_ref = data_ref.particles["Position"][
-            np.argsort(data_ref.particles["Particle Identifier"])
-        ]
+        mapping = data_ref.particles.remap_indices(data.particles)
+        pos = data.particles["Position"]
+        pos_ref = data_ref.particles["Position"][mapping]
 
         rmsd_all = np.mean(np.square(pos_ref - pos), axis=1)
         data.particles_.create_property("RMSD", data=rmsd_all)
