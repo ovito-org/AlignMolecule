@@ -2,6 +2,11 @@
 # Align a molecule using Kabsch algorithm.
 # https://en.wikipedia.org/wiki/Kabsch_algorithm
 
+import platform
+
+if tuple(int(v) for v in platform.python_version_tuple()) <= (3, 8):
+    from __future__ import annotations  # noqa: F404
+
 from ovito.data import DataCollection
 from ovito.modifiers import AffineTransformationModifier
 import numpy as np
