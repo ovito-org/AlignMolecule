@@ -1,11 +1,16 @@
+#### Molecule Align ####
+# Align molecules using the Kabsch algorithm.
+# https://en.wikipedia.org/wiki/Kabsch_algorithm
+
 from ovito.data import DataCollection, DataTable
 from ovito.modifiers import AffineTransformationModifier
 import numpy as np
 from ovito.pipeline import ModifierInterface
+from traits.api import Bool
 
 
 class MoleculeAlign(ModifierInterface):
-    # https://en.wikipedia.org/wiki/Kabsch_algorithm
+    only_selected = Bool(False, label="Use only selected particles")
 
     def input_caching_hints(self, frame, input_slots, **kwargs):
         return [0, frame]
@@ -19,13 +24,16 @@ class MoleculeAlign(ModifierInterface):
         **kwargs,
     ):
         # Get selections
-        if "Selection" in data.particles:
+        if self.only_selected and "Selection" not in data.particles:
+            raise ValueError("No selection available. Please define a selection.")
+
+        if self.only_selected:
             selection = data.particles["Selection"] == 1
         else:
             selection = np.ones(data.particles.count, dtype=bool)
 
         data_ref = input_slots["upstream"].compute(0)
-        if "Selection" in data_ref.particles:
+        if self.only_selected:
             selection_ref = data_ref.particles["Selection"] == 1
         else:
             selection_ref = np.ones(data_ref.particles.count, dtype=bool)
