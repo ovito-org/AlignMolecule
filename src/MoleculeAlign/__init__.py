@@ -6,14 +6,15 @@ from ovito.data import DataCollection, DataTable
 from ovito.modifiers import AffineTransformationModifier
 import numpy as np
 from ovito.pipeline import ModifierInterface
-from traits.api import Bool
+from traits.api import Bool, Int
 
 
 class MoleculeAlign(ModifierInterface):
-    only_selected = Bool(False, label="Use only selected particles")
+    only_selected = Bool(True, label="Use only selected particles")
+    reference_frame = Int(0, label="Reference frame")
 
-    def input_caching_hints(self, frame, input_slots, **kwargs):
-        return [0, frame]
+    def input_caching_hints(self, frame, **kwargs):
+        return [self.reference_frame, frame]
 
     def modify(
         self,
@@ -32,7 +33,7 @@ class MoleculeAlign(ModifierInterface):
         else:
             selection = np.ones(data.particles.count, dtype=bool)
 
-        data_ref = input_slots["upstream"].compute(0)
+        data_ref = input_slots["upstream"].compute(self.reference_frame)
         if self.only_selected:
             selection_ref = data_ref.particles["Selection"] == 1
         else:
