@@ -32,7 +32,7 @@ Here's an example illustrating how the modifier aligns the highlighted (green) a
 
 ![Example image showing the molecule alignment](examples/Example_01.png)
 
-https://github.com/ovito-org/MoleculeAlign/raw/main/examples/Example_01.mp4
+![Example video showing the molecule alignment](examples/Example_01.mp4)
 
 ## Installation
 - OVITO Pro [integrated Python interpreter](https://docs.ovito.org/python/introduction/installation.html#ovito-pro-integrated-interpreter):
