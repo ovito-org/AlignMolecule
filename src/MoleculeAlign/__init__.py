@@ -101,8 +101,10 @@ class MoleculeAlign(ModifierInterface):
             np.argsort(data_ref.particles["Particle Identifier"])
         ]
 
-        rmsd_all = np.mean(np.square(pos_ref - pos))
-        data.attributes["MoleculeAlign.RMSD_all"] = rmsd_all
+        rmsd_all = np.mean(np.square(pos_ref - pos), axis=1)
+        data.particles_.create_property("RMSD", data=rmsd_all)
+
+        data.attributes["MoleculeAlign.RMSD_all"] = np.mean(rmsd_all)
 
         # Save RMSD
         if "MoleculeAlign.RMSD.array" not in data_cache.attributes:
