@@ -21,10 +21,12 @@ The modifier calculates the root mean square deviation (RMSD) of atomic coordina
 
 Additionally, it provides an RMSD value for each atom.
 
-## Parameters 
+## Parameters
 
-- `only_selected` / "Use only selected particles": This option allows alignment using only selected particles as the reference. `Default = True`
-- `reference_frame` / "Reference frame": Specifies the frame to use as the reference for alignment. `Default = 0`
+| Variable Name       | Human-Readable Name         | Description                                                      | Default Value |
+|---------------------|-----------------------------|------------------------------------------------------------------|---------------|
+| `only_selected`     | **Use only selected particles** | Allows alignment using only selected particles as the reference. | `True`        |
+| `reference_frame`   | **Reference frame**          | Specifies the frame to use as the reference for alignment.       | `0`           |
 
 ## Example
 
