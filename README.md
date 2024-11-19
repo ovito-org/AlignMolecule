@@ -23,10 +23,10 @@ Additionally, it provides an RMSD value for each atom.
 
 ## Parameters
 
-| GUI label           | Python name        | Description                                                      | Default Value |
-|---------------------|-----------------------------|------------------------------------------------------------------|---------------|
-| **Use only selected particles** |  `only_selected` | Allows alignment using only selected particles as the reference. | `True`        |
-| **Reference frame** | `reference_frame` | Specifies the frame to use as the reference for alignment.       | `0`           |
+| GUI name                        | Python name       | Description                                                      | Default Value |
+|---------------------------------|-------------------|------------------------------------------------------------------|---------------|
+| **Use only selected particles** | `only_selected`   | Allows alignment using only selected particles as the reference. | `True`        |
+| **Reference frame**             | `reference_frame` | Specifies the frame to use as the reference for alignment.       | `0`           |
 
 ## Example
 
