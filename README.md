@@ -1,9 +1,10 @@
 # Align Molecule
+
 Align a molecule using [Kabsch algorithm](https://en.wikipedia.org/wiki/Kabsch_algorithm).
 
 ## Description
 
-This tool aligns atoms across different snapshots in a trajectory using the [Kabsch algorithm](https://en.wikipedia.org/wiki/Kabsch_algorithm), allowing only rotational adjustments without any stretching or shearing.
+This extension for [OVITO](https://www.ovito.org) aligns atoms across different snapshots in a trajectory using the [Kabsch algorithm](https://en.wikipedia.org/wiki/Kabsch_algorithm), allowing only rotational adjustments without any stretching or shearing.
 
 Users can select either all atoms or a subset as the reference for alignment. Optionally, a reference frame can be specified, defaulting to the first frame of the trajectory. This frame serves as the baseline orientation for the atoms, with their [centroid](https://en.wikipedia.org/wiki/Centroid) repositioned to the origin.
 
@@ -37,6 +38,21 @@ Here's an example illustrating how the modifier aligns the highlighted (green) a
 ![Example video showing the molecule alignment](examples/Example_01.gif)
 
 ## Installation
+
+### pip
+
+- OVITO Pro [integrated Python interpreter](https://docs.ovito.org/python/introduction/installation.html#ovito-pro-integrated-interpreter):
+  ```
+  ovitos -m pip install --user ovitocontrib-AlignMolecule
+  ``` 
+  The `--user` option is recommended and [installs the package in the user's site directory](https://pip.pypa.io/en/stable/user_guide/#user-installs).
+
+- Other Python interpreters or Conda environments:
+  ```
+  pip install ovitocontrib-AlignMolecule
+  ```
+
+### GitHub
 - OVITO Pro [integrated Python interpreter](https://docs.ovito.org/python/introduction/installation.html#ovito-pro-integrated-interpreter):
   ```
   ovitos -m pip install --user git+https://github.com/ovito-org/AlignMolecule.git
