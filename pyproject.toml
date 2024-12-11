@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ovitocontrib-AlignMolecule"
-version = "2024.3"
+version = "2024.4"
 description = "Align molecules using the Kabsch algorithm."
 keywords = ["ovito", "ovito-extension"]
 authors = [{name = "Daniel Utt", email = "utt@ovito.org"}]
