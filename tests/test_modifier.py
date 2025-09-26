@@ -1,15 +1,14 @@
 import numpy as np
 import pytest
-from AlignMolecule import AlignMolecule
 from ovito.io import import_file
 from ovito.modifiers import ExpressionSelectionModifier, UnwrapTrajectoriesModifier
+
+from AlignMolecule import AlignMolecule
 
 
 @pytest.fixture()
 def setup_pipeline():
-    pipeline = import_file(
-        "https://gitlab.com/ovito-org/ovito-sample-data/-/raw/2eb51d0afee9e3cb2ac17a0ebfba53ac48ee67ce/LAMMPS/RDX.reax.dump"
-    )
+    pipeline = import_file("RDX.reax.dump")
     pipeline.modifiers.append(UnwrapTrajectoriesModifier())
 
     return pipeline, "||".join(

@@ -48,6 +48,11 @@ jobs:
         uv pip install pytest
         uv pip install --pre ovito
         uv pip install .
+    - name: Download test input file (cross-platform PowerShell)
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Force -Path test-data | Out-Null
+        Invoke-WebRequest -Uri "https://gitlab.com/ovito-org/ovito-sample-data/-/raw/2eb51d0afee9e3cb2ac17a0ebfba53ac48ee67ce/LAMMPS/RDX.reax.dump" -OutFile "RDX.reax.dump"
     - name: Test with pytest
       run: |
         pytest
